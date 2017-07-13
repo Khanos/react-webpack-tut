@@ -1,16 +1,3 @@
-/*
-    ./client/components/App.jsx
-*/
-// import React from 'react';
-//
-// export default class App extends React.Component {
-//   render() {
-//     return (
-//      <div style={{textAlign: 'center'}}>
-//         <h1>Hello World!</h1>
-//       </div>);
-//   }
-// }
 import React, { PropTypes } from 'react'
 
 const Card = (props) => {
@@ -32,9 +19,57 @@ const Card = (props) => {
 const CardList = (props) => {
     return (
         <div>
-            {props.cards.map(card => <Card {...card} />)}
+            {props.cards.map((card) =>
+                <div key={card.id}>
+                    <Card
+                        name={card.name}
+                        company={card.company}
+                        avatarUrl={card.avatarUrl}
+                    />
+                </div>
+            )}
         </div>
     );
 };
 
-export default CardList;
+class Form extends React.Component {
+    render () {
+        return (
+            <form>
+                <input type="text" placeholder="Github username"/>
+                <button type="submit">Add Card</button>
+            </form>
+        );
+    }
+}
+
+class MainContainer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            cards: [
+                {
+                    id: 1,
+                    name: "Epilef Rodriguez",
+                    company: "Free Will",
+                    avatarUrl: "https://avatars3.githubusercontent.com/u/10603782?v=3"
+                },
+                {
+                    id: 2,
+                    name: "Angular",
+                    company: "null",
+                    avatarUrl: "https://avatars0.githubusercontent.com/u/139426?v=3"}
+            ]
+        };
+    }
+    render () {
+        return (
+            <div>
+                <Form />
+                <CardList  cards={this.state.cards}/>
+            </div>
+        );
+    }
+}
+
+export default MainContainer;
