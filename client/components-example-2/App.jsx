@@ -17,8 +17,8 @@ const Stars = (props) => {
 }
 const Button = (props) => {
     return (
-        <div className="col-sm-2">
-            <button className="btn" disabled={props.selectedNumbers.length === 0}>=</button>
+        <div className="col-sm-2" style={{height: '96px', display: 'flex', alignItems: 'center'}}>
+            <button className="btn btn-info" disabled={props.selectedNumbers.length === 0}>=</button>
         </div>
     )
 }
@@ -26,7 +26,7 @@ const Answer = (props) => {
     return (
         <div className="col-sm-5">
             {props.selectedNumbers.map((number, i) =>
-                <span key={i} onClick={() => props.unselectNumber(number)}>{number}</span>
+                <span className="btn btn-success" key={i} onClick={() => props.unselectNumber(number)}>{number}</span>
             )}
         </div>
     )
@@ -39,12 +39,12 @@ const Numbers = (props) => {
         }
     }
     return (
-        <div className="card text-center" style={{width: 'auto', border: '#ddd solid 0.1em'}}>
+        <div className="card text-center" style={{width: 'auto', height: '50px', border: '#ddd solid 0.1em'}}>
             <div className="card-block">
                 {Numbers.list.map((number, i) =>
                     <span
                         key={i}
-                        className={numberClassName(number)}
+                        className={numberClassName(number), "btn btn-primary"}
                         onClick={() => props.selectNumber(number)}
                     >
                         {number}
