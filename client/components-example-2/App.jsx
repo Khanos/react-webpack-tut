@@ -102,17 +102,4 @@ class Game extends React.Component {
     }
 }
 
-class MainContainer extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-    render () {
-        return (
-            <div>
-                <Game />
-            </div>
-        );
-    }
-}
-
-export default MainContainer;
+export default Game;
