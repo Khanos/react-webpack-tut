@@ -2,14 +2,14 @@ import React, { PropTypes } from 'react'
 import _ from 'lodash'
 
 const Stars = (props) => {
-    const numberOfStars = 1 + Math.floor(Math.random()*9);
+    // const numberOfStars = 1 + Math.floor(Math.random()*9);
     // let stars = [];
     // for (var i = 0; i < numberOfStars; i++) {
     //     stars.push(<i key={i} className="fa fa-star"></i>);
     // }
     return (
         <div className="col-sm-5">
-            {_.range(numberOfStars).map(i =>
+            {_.range(props.numberOfStars).map(i =>
                 <i key={i} className="fa fa-star"></i>
             )}
         </div>
@@ -18,24 +18,37 @@ const Stars = (props) => {
 const Button = (props) => {
     return (
         <div className="col-sm-2">
-            <button>=</button>
+            <button className="btn" disabled={props.selectedNumbers.length === 0}>=</button>
         </div>
     )
 }
 const Answer = (props) => {
     return (
         <div className="col-sm-5">
-            <span>1</span>
+            {props.selectedNumbers.map((number, i) =>
+                <span key={i} onClick={() => props.unselectNumber(number)}>{number}</span>
+            )}
         </div>
     )
 }
 const Numbers = (props) => {
     // const arrayOfNumbers = _.range(1,10);
+    const numberClassName = (number) => {
+        if (props.selectedNumbers.indexOf(number) >= 0) {
+            return 'selected';
+        }
+    }
     return (
         <div className="card text-center" style={{width: 'auto', border: '#ddd solid 0.1em'}}>
             <div className="card-block">
                 {Numbers.list.map((number, i) =>
-                    <span key={i}>{number}</span>
+                    <span
+                        key={i}
+                        className={numberClassName(number)}
+                        onClick={() => props.selectNumber(number)}
+                    >
+                        {number}
+                    </span>
                 )}
             </div>
         </div>
@@ -47,19 +60,43 @@ Numbers.list = _.range(1,10);
 class Game extends React.Component {
     constructor(props) {
         super(props);
+        this.state =  {
+            selectedNumbers: [],
+            numberOfStars: 1 + Math.floor(Math.random()*9)
+        };
+        this.selectNumber = (clickedNumber) => {
+            this.setState(prevState => {
+                // Solution number One:
+                // if (prevState.selectedNumbers.indexOf(clickedNumber) == -1) {
+                //     prevState.selectedNumbers.push(clickedNumber);
+                // }
+                // Solution number two:
+                if (prevState.selectedNumbers.indexOf(clickedNumber) >= 0) {return;}
+                prevState.selectedNumbers.push(clickedNumber);
+            });
+        };
+        this.unselectNumber = (clickedNumber) => {
+            this.setState(prevState => ({
+                selectedNumbers: prevState.selectedNumbers.filter((number) => number !== clickedNumber)
+            }));
+        };
     }
     render () {
+        const { selectedNumbers, numberOfStars} = this.state;
         return (
             <div className="container">
                 <h3>Play Nine</h3>
                 <hr />
                 <div className="row">
-                    <Stars />
-                    <Button />
-                    <Answer />
+                    <Stars numberOfStars={numberOfStars}/>
+                    <Button selectedNumbers={selectedNumbers}/>
+                    <Answer selectedNumbers={selectedNumbers} unselectNumber={this.unselectNumber}/>
                 </div>
                 <br />
-                <Numbers />
+                <Numbers
+                    selectedNumbers={selectedNumbers}
+                    selectNumber={this.selectNumber}
+                />
             </div>
         );
     }
