@@ -15,10 +15,16 @@ span {
     height: 35px;
     border-radius: 50% !important;
 }
-.selected {
-    background-color: #eee;
-    color: #ddd;
-    cursor: not-allowed;
+.btn-panel{
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+}
+.btn-danger {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
 }
 .used {
     background-color: #aaddaa;
