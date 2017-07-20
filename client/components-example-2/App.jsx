@@ -81,6 +81,16 @@ const Numbers = (props) => {
         </div>
     )
 }
+const DoneFrame = (props) => {
+    return (
+        <div className="text-center">
+            <h2>{props.doneStatus}</h2>
+            <button className="btn btn-primary btn-sm" onClick={props.resetGame}>
+                Play Again
+            </button>
+        </div>
+    )
+}
 
 Numbers.list = _.range(1,10);
 
@@ -88,15 +98,37 @@ class Game extends React.Component {
     static randomNumber() {
         return 1 + Math.floor(Math.random()*9)
     };
-    constructor(props) {
-        super(props);
-        this.state =  {
+    static initialState() {
+        return {
             selectedNumbers: [],
             numberOfStars: Game.randomNumber(),
             answerCorrect: null,
             usedNumbers: [],
-            redraws: 5
+            redraws: 5,
+            doneStatus: null
+        }
+    };
+    constructor(props) {
+        super(props);
+        var possibleCombinationSum = function(arr, n) {
+            if (arr.indexOf(n) >= 0) { return true; }
+            if (arr[0] > n) { return false; }
+            if (arr[arr.length - 1] > n) {
+                arr.pop();
+                return possibleCombinationSum(arr, n);
+            }
+            var listSize = arr.length, combinationsCount = (1 << listSize)
+            for (var i = 1; i < combinationsCount ; i++ ) {
+                var combinationSum = 0;
+                for (var j=0 ; j < listSize ; j++) {
+                    if (i & (1 << j)) { combinationSum += arr[j]; }
+                }
+                if (n === combinationSum) { return true; }
+            }
+            return false;
         };
+        this.state = Game.initialState();
+        this.resetGame = () => this.setState(Game.initialState());
         this.selectNumber = (clickedNumber) => {
             this.setState(prevState => {
                 // Solution number One:
@@ -125,7 +157,7 @@ class Game extends React.Component {
                 selectedNumbers: [],
                 answerCorrect: null,
                 numberOfStars: Game.randomNumber()
-            }));
+            }), this.updateDoneStatus);
         };
         this.redraw = () => {
             if (this.state.redraws === 0) {return;}
@@ -134,11 +166,27 @@ class Game extends React.Component {
                 answerCorrect: null,
                 selectedNumbers: [],
                 redraws: prevState.redraws - 1
-            }));
+            }), this.updateDoneStatus);
+        };
+        this.possibleSolutions = ({numberOfStars, usedNumbers}) => {
+            const possibleNumbers = _.range(1,10).filter(number =>
+                usedNumbers.indexOf(number) === -1
+            );
+            return possibleCombinationSum(possibleNumbers, numberOfStars);
+        };
+        this.updateDoneStatus = () => {
+            this.setState(prevState => {
+                if (prevState.usedNumbers.length === 9) {
+                    return {doneStatus: 'Done, Nice!'};
+                }
+                if (prevState.redraws === 0 && !this.possibleSolutions(prevState)) {
+                    return {doneStatus: 'Game Over!'}
+                }
+            })
         };
     }
     render () {
-        const { selectedNumbers, numberOfStars, answerCorrect, usedNumbers, redraws} = this.state;
+        const { selectedNumbers, numberOfStars, answerCorrect, usedNumbers, redraws, doneStatus} = this.state;
         return (
             <div className="container">
                 <div className="panel panel-primary">
@@ -159,11 +207,14 @@ class Game extends React.Component {
                             <Answer selectedNumbers={selectedNumbers} unselectNumber={this.unselectNumber}/>
                         </div>
                         <br />
-                        <Numbers
-                            selectedNumbers={selectedNumbers}
-                            selectNumber={this.selectNumber}
-                            usedNumbers={usedNumbers}
-                        />
+                        {doneStatus ?
+                            <DoneFrame doneStatus={doneStatus} resetGame={this.resetGame}/> :
+                            <Numbers
+                                selectedNumbers={selectedNumbers}
+                                selectNumber={this.selectNumber}
+                                usedNumbers={usedNumbers}
+                            />
+                        }
                     </div>
                 </div>
             </div>
