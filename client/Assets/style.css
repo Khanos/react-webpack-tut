@@ -2,6 +2,18 @@
     display: inline-block;
     margin-left: 10px;
 }*/
+body {
+    background: whitesmoke !important;
+}
+header {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+}
+.content {
+    background-color: white;
+    padding: 4rem;
+}
 .fa-star {
     margin: 0.5em;
     font-size: 24px !important;
